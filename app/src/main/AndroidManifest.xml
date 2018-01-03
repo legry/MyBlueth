@@ -15,7 +15,8 @@
         <service
             android:name=".MyBlueth"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="arduins" />
 
@@ -25,7 +26,8 @@
 
         <activity android:name=".BluthSetts"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="arduins" />
 

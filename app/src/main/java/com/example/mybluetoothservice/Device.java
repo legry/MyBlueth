@@ -1,8 +1,7 @@
 package com.example.mybluetoothservice;
 
-public class Device {
-    private String devId, devName, status;
-    private boolean connect;
+class Device {
+    private String devId, devName;
 
     public String getDevId() {
         return devId;
@@ -18,21 +17,5 @@ public class Device {
 
     public void setDevName(String devName) {
         this.devName = devName;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
-    public boolean isConnect() {
-        return connect;
-    }
-
-    public void setConnect(boolean connect) {
-        this.connect = connect;
     }
 }
