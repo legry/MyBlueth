@@ -55,6 +55,7 @@ public class DialogDevices extends DialogFragment {
         public void onReceive(Context context, Intent intent) {
             if (intent.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
                 listener.Listener(btAdapter.getBondedDevices());
+                getContext().unregisterReceiver(receiver);
             }
         }
     };
@@ -73,11 +74,5 @@ public class DialogDevices extends DialogFragment {
             listener.Listener(btAdapter.getBondedDevices());
         }
         return builder.create();
-    }
-
-    @Override
-    public void onDismiss(DialogInterface dialog) {
-        super.onDismiss(dialog);
-        getContext().unregisterReceiver(receiver);
     }
 }

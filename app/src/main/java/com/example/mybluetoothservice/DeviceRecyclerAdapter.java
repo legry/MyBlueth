@@ -2,13 +2,9 @@ package com.example.mybluetoothservice;
 
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -17,15 +13,18 @@ import java.util.List;
 class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceRecyclerAdapter.MyHolder> {
 
     private FragmentManager fragmentManager;
-
     private List<Device> devices = new ArrayList<>();
+
     @Override
     public MyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MyHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.device, parent, false));
     }
 
-    public DeviceRecyclerAdapter(FragmentManager fragmentManager) {
+    DeviceRecyclerAdapter(FragmentManager fragmentManager, String[] devIDs) {
         this.fragmentManager = fragmentManager;
+        for (String devID : devIDs) {
+            devices.add(new Device(devID));
+        }
     }
 
     @Override
@@ -47,11 +46,6 @@ class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceRecyclerAdapter.M
     @Override
     public int getItemCount() {
         return devices.size();
-    }
-
-    void  addDevice(Device device) {
-        devices.add(device);
-        this.notifyDataSetChanged();
     }
 
     class MyHolder extends RecyclerView.ViewHolder {
