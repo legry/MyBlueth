@@ -7,35 +7,51 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.List;
 
 class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceRecyclerAdapter.MyHolder> {
 
     private FragmentManager fragmentManager;
-    private List<Device> devices = new ArrayList<>();
+    private List<Device> devices;
 
     @Override
     public MyHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new MyHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.device, parent, false));
     }
 
-    DeviceRecyclerAdapter(FragmentManager fragmentManager, String[] devIDs) {
+    DeviceRecyclerAdapter(FragmentManager fragmentManager, File file) {
         this.fragmentManager = fragmentManager;
-        for (String devID : devIDs) {
-            devices.add(new Device(devID));
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.create();
+        try {
+            this.devices = gson.fromJson(new FileReader(file), new TypeToken<List<Device>>() {}.getType());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
+    }
+
+    List<Device> getDevices() {
+        return devices;
     }
 
     @Override
     public void onBindViewHolder(final MyHolder holder, final int position) {
         holder.devId.setText(devices.get(position).getDevId());
+        holder.devName.setText(devices.get(position).getDevName());
         holder.devName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 (new DialogDevices(new DialogDevices.DeviceChoiceListener() {
                     @Override
-                    public void choiceListener(CharSequence device) {
+                    public void choiceListener(String device) {
+                        devices.get(position).setDevName(device);
                         holder.devName.setText(device);
                     }
                 })).show(fragmentManager, "DialogDevices");

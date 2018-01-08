@@ -22,7 +22,7 @@ public class DialogDevices extends DialogFragment {
     }
 
     interface DeviceChoiceListener {
-        void choiceListener(CharSequence device);
+        void choiceListener(String device);
     }
 
     private DeviceChoiceListener choiceListener;
@@ -30,7 +30,7 @@ public class DialogDevices extends DialogFragment {
     private BluetoothEnableListener listener = new BluetoothEnableListener() {
         @Override
         public void Listener(Set<BluetoothDevice> bluetoothDevices) {
-            final CharSequence[] arrDevices = new CharSequence[bluetoothDevices.size()];
+            final String[] arrDevices = new String[bluetoothDevices.size()];
             int i = 0;
             for (BluetoothDevice btDevice:bluetoothDevices) {
                 arrDevices[i] = btDevice.getName() + "\n" + btDevice.getAddress();

@@ -11,14 +11,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.JsonWriter;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BluthSetts extends AppCompatActivity {
 
@@ -28,6 +29,7 @@ public class BluthSetts extends AppCompatActivity {
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
     boolean read_ok = false, write_ok = false;
     private File file;
+    private DeviceRecyclerAdapter dra;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,30 +47,55 @@ public class BluthSetts extends AppCompatActivity {
 
     }
 
-    private void writeFile() {
-        DeviceRecyclerAdapter dra = new DeviceRecyclerAdapter(getSupportFragmentManager(), getIntent().getStringArrayExtra("devices"));
-        JSONObject jsonObject = new JSONObject();
+    public void writeFile(List<Device> devices) {
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        Gson gson = gsonBuilder.create();
         try {
-            jsonObject.put("myAdapter", dra);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        try {
-            JsonWriter jsonWriter = new JsonWriter(new FileWriter(file));
+            FileWriter fw = new FileWriter(file);
+            fw.write(gson.toJson(devices));
+            fw.flush();
+            fw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void openBluthSetts() {
-        action = getIntent().getStringExtra("action");
-        file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/MyBluthJSONFiles/" + action);
+    private void readFile() {
+        dra = new DeviceRecyclerAdapter(getSupportFragmentManager(),file);
+        recyclerView.setAdapter(dra);
+    }
+
+    private void creatFile() {
+        file = new File(file, action + ".txt");
         if (!file.exists()) {
             try {
-                file.createNewFile();
+                if (file.createNewFile()) {
+                    String[] devs = getIntent().getStringArrayExtra("devices");
+                    List<Device> devices = new ArrayList<>();
+
+                    for (String dev : devs) {
+                        devices.add(new Device(dev));
+                    }
+                    writeFile(devices);
+                    readFile();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        } else {
+            readFile();
+        }
+    }
+
+    private void openBluthSetts() {
+        action = getIntent().getStringExtra("action");
+        file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/MyBluthJSONFiles");
+        if (!file.exists()) {
+            if (file.mkdir()) {
+                creatFile();
+            }
+        } else {
+            creatFile();
         }
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
@@ -83,6 +110,7 @@ public class BluthSetts extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         // sendBroadcast(new Intent().setAction(action).putExtra("BluthSetts", 222));
+        writeFile(dra.getDevices());
     }
 
     @Override
