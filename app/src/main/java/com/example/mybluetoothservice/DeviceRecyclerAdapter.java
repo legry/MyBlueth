@@ -7,14 +7,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.List;
+
+import static com.example.mybluetoothservice.FileOperations.readFile;
 
 class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceRecyclerAdapter.MyHolder> {
 
@@ -28,13 +24,7 @@ class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceRecyclerAdapter.M
 
     DeviceRecyclerAdapter(FragmentManager fragmentManager, File file) {
         this.fragmentManager = fragmentManager;
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        Gson gson = gsonBuilder.create();
-        try {
-            this.devices = gson.fromJson(new FileReader(file), new TypeToken<List<Device>>() {}.getType());
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        devices = readFile(file);
     }
 
     List<Device> getDevices() {
@@ -45,18 +35,10 @@ class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceRecyclerAdapter.M
     public void onBindViewHolder(final MyHolder holder, final int position) {
         holder.devId.setText(devices.get(position).getDevId());
         holder.devName.setText(devices.get(position).getDevName());
-        holder.devName.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                (new DialogDevices(new DialogDevices.DeviceChoiceListener() {
-                    @Override
-                    public void choiceListener(String device) {
-                        devices.get(position).setDevName(device);
-                        holder.devName.setText(device);
-                    }
-                })).show(fragmentManager, "DialogDevices");
-            }
-        });
+        holder.devName.setOnClickListener(view -> (new DialogDevices(device -> {
+            devices.get(position).setDevName(device);
+            holder.devName.setText(device);
+        })).show(fragmentManager, "DialogDevices"));
     }
 
     @Override

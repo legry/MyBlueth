@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.mybluetoothservice.FileOperations.*;
+
 public class BluthSetts extends AppCompatActivity {
 
     String action;
@@ -28,7 +30,7 @@ public class BluthSetts extends AppCompatActivity {
     String[] myPermissions = new String[] {Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
     boolean read_ok = false, write_ok = false;
-    private File file;
+    public static File file;
     private DeviceRecyclerAdapter dra;
 
     @Override
@@ -47,56 +49,15 @@ public class BluthSetts extends AppCompatActivity {
 
     }
 
-    public void writeFile(List<Device> devices) {
-        GsonBuilder gsonBuilder = new GsonBuilder();
-        Gson gson = gsonBuilder.create();
-        try {
-            FileWriter fw = new FileWriter(file);
-            fw.write(gson.toJson(devices));
-            fw.flush();
-            fw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     private void readFile() {
         dra = new DeviceRecyclerAdapter(getSupportFragmentManager(),file);
         recyclerView.setAdapter(dra);
     }
 
-    private void creatFile() {
-        file = new File(file, action + ".txt");
-        if (!file.exists()) {
-            try {
-                if (file.createNewFile()) {
-                    String[] devs = getIntent().getStringArrayExtra("devices");
-                    List<Device> devices = new ArrayList<>();
-
-                    for (String dev : devs) {
-                        devices.add(new Device(dev));
-                    }
-                    writeFile(devices);
-                    readFile();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            readFile();
-        }
-    }
 
     private void openBluthSetts() {
-        action = getIntent().getStringExtra("action");
-        file = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/MyBluthJSONFiles");
-        if (!file.exists()) {
-            if (file.mkdir()) {
-                creatFile();
-            }
-        } else {
-            creatFile();
-        }
+        createFile(getIntent());
+        readFile();
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {

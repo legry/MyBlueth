@@ -3,6 +3,9 @@ package com.example.mybluetoothservice;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.RemoteException;
+
+import com.example.ArduinoAIDL.IArduino;
 
 public class MyBlueth extends Service {
 
@@ -16,7 +19,7 @@ public class MyBlueth extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return (IBinder) iArduino;
     }
 
     @Override
@@ -24,4 +27,12 @@ public class MyBlueth extends Service {
         super.onDestroy();
         sendBroadcast(new Intent().setAction(action).putExtra("mybluth", 1255));
     }
+
+    IArduino iArduino = new IArduino.Stub() {
+
+        @Override
+        public String comandBridge(String comand) throws RemoteException {
+            return null;
+        }
+    };
 }

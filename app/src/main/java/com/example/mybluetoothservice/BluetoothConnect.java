@@ -93,50 +93,47 @@ class BluetoothConnect {
     }
 
     void ConnectCreat() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (bluetoothSocket == null) {
-                    try {
-                        bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    if (!create) {
-                        break;
-                    }
-                }
-                while (!bluetoothSocket.isConnected()) {
-                    try {
-                        bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-                        bluetoothSocket.connect();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    if (!create) {
-                        break;
-                    }
-                }
+        new Thread(() -> {
+            while (bluetoothSocket == null) {
                 try {
-                    os = bluetoothSocket.getOutputStream();
-                    is = bluetoothSocket.getInputStream();
-                    InputStreamReader inStRdr = new InputStreamReader(is);
-                    bfRdr = new BufferedReader(inStRdr);
-                    handler.post(connectreader);
-                    while (bluetoothSocket.isConnected()) {
-                        if (is.available() > 0) {
-                            data = bfRdr.readLine();
-                            handler.post(runreader);
-                        }
-                        if (!create) {
-                            bluetoothSocket.close();
-                        }
-                    }
+                    bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                handler.post(connectreader);
+                if (!create) {
+                    break;
+                }
             }
+            while (!bluetoothSocket.isConnected()) {
+                try {
+                    bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+                    bluetoothSocket.connect();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                if (!create) {
+                    break;
+                }
+            }
+            try {
+                os = bluetoothSocket.getOutputStream();
+                is = bluetoothSocket.getInputStream();
+                InputStreamReader inStRdr = new InputStreamReader(is);
+                bfRdr = new BufferedReader(inStRdr);
+                handler.post(connectreader);
+                while (bluetoothSocket.isConnected()) {
+                    if (is.available() > 0) {
+                        data = bfRdr.readLine();
+                        handler.post(runreader);
+                    }
+                    if (!create) {
+                        bluetoothSocket.close();
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            handler.post(connectreader);
         }).start();
     }
 
@@ -167,21 +164,18 @@ class BluetoothConnect {
     };
 
     private void getBondeds() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                devices = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item);
-                bluetoothdevices = new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
-                Set<BluetoothDevice> bondedDevices = null;
-                while (bondedDevices == null) {
-                    bondedDevices = bluetoothAdapter.getBondedDevices();
-                }
-                for (BluetoothDevice device : bondedDevices) {
-                    devices.add(device.getName() + "\n" + device.getAddress());
-                    bluetoothdevices.add(device);
-                }
-                handler.post(bondsNotyf);
+        new Thread(() -> {
+            devices = new ArrayAdapter<>(context, android.R.layout.simple_spinner_dropdown_item);
+            bluetoothdevices = new ArrayAdapter<>(context, android.R.layout.select_dialog_singlechoice);
+            Set<BluetoothDevice> bondedDevices = null;
+            while (bondedDevices == null) {
+                bondedDevices = bluetoothAdapter.getBondedDevices();
             }
+            for (BluetoothDevice device : bondedDevices) {
+                devices.add(device.getName() + "\n" + device.getAddress());
+                bluetoothdevices.add(device);
+            }
+            handler.post(bondsNotyf);
         }).start();
     }
 
@@ -197,14 +191,11 @@ class BluetoothConnect {
     };
 
     void WriteData(final String data) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    os.write(data.getBytes());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        new Thread(() -> {
+            try {
+                os.write(data.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }).start();
     }
