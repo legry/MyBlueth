@@ -7,13 +7,14 @@ import android.os.RemoteException;
 
 import com.example.ArduinoAIDL.IArduino;
 
+import java.util.HashMap;
+
 public class MyBlueth extends Service {
 
     String action;
+    HashMap<String, BluetoothConnect> bluthMap = new HashMap<>();
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        action = intent.getStringExtra("action");
-        sendBroadcast(new Intent().setAction(action).putExtra("mybluth", 168));
         return super.onStartCommand(intent, flags, startId);
     }
 

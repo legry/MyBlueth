@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -12,20 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import static com.example.mybluetoothservice.FileOperations.*;
+import static com.example.mybluetoothservice.FileOperations.createFile;
+import static com.example.mybluetoothservice.FileOperations.writeFile;
 
 public class BluthSetts extends AppCompatActivity {
 
-    String action;
     RecyclerView recyclerView;
     String[] myPermissions = new String[] {Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
@@ -44,9 +36,6 @@ public class BluthSetts extends AppCompatActivity {
         } else {
             ActivityCompat.requestPermissions(this, myPermissions, 111);
         }
-
-        // sendBroadcast(new Intent().setAction(action).putExtra("BluthSetts", 111));
-
     }
 
     private void readFile() {
@@ -63,14 +52,11 @@ public class BluthSetts extends AppCompatActivity {
         } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             recyclerView.setLayoutManager(new GridLayoutManager(this, 4));
         }
-
-        //recyclerView.setAdapter();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // sendBroadcast(new Intent().setAction(action).putExtra("BluthSetts", 222));
         writeFile(dra.getDevices());
     }
 

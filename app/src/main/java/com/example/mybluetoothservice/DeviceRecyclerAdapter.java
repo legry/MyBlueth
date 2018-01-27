@@ -34,11 +34,14 @@ class DeviceRecyclerAdapter extends RecyclerView.Adapter<DeviceRecyclerAdapter.M
     @Override
     public void onBindViewHolder(final MyHolder holder, final int position) {
         holder.devId.setText(devices.get(position).getDevId());
-        holder.devName.setText(devices.get(position).getDevName());
-        holder.devName.setOnClickListener(view -> (new DialogDevices(device -> {
-            devices.get(position).setDevName(device);
-            holder.devName.setText(device);
-        })).show(fragmentManager, "DialogDevices"));
+        holder.devName.setText(devices.get(position).getDevName() + "\n" + devices.get(position).getDevAddr());
+        holder.devName.setOnClickListener(view -> {
+            (new DialogDevices((devName, devAddrs) -> {
+                devices.get(position).setDevName(devName);
+                devices.get(position).setDevAddr(devAddrs);
+                holder.devName.setText(devName + "\n" + devAddrs);
+            })).show(fragmentManager, "DialogDevices");
+        });
     }
 
     @Override
