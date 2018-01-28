@@ -19,11 +19,11 @@ class Device {
         this.devName = devName;
     }
 
-    public String getDevAddr() {
+    String getDevAddr() {
         return devAddr;
     }
 
-    public void setDevAddr(String devAddr) {
+    void setDevAddr(String devAddr) {
         this.devAddr = devAddr;
     }
 }

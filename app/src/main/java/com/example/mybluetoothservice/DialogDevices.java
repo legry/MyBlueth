@@ -32,7 +32,7 @@ public class DialogDevices extends DialogFragment {
         listener = new BluetoothEnableListener() {
             @Override
             public void Listener(Set<BluetoothDevice> bluetoothDevices) {
-                final String[] arrDevices = new String[bluetoothDevices.size()];
+                String[] arrDevices = new String[bluetoothDevices.size()];
                 String[] devNames = new String[bluetoothDevices.size()];
                 String[] devAddrs = new String[bluetoothDevices.size()];
                 int i = 0;
@@ -57,7 +57,7 @@ public class DialogDevices extends DialogFragment {
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
+            if (intent.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
                 listener.Listener(btAdapter.getBondedDevices());
                 getContext().unregisterReceiver(receiver);
             }
@@ -66,6 +66,7 @@ public class DialogDevices extends DialogFragment {
 
     private BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
     private AlertDialog.Builder builder;
+
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
