@@ -32,8 +32,9 @@ public class MyBlueth extends Service {
     IArduino iArduino = new IArduino.Stub() {
 
         @Override
-        public String comandBridge(String comand) throws RemoteException {
+        public String comandBridge(String dev, String comand) throws RemoteException {
             return null;
         }
+
     };
 }
